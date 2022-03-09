@@ -11,17 +11,37 @@ var storage = multer.diskStorage({
     cb(null, "./public/uploads")
   },
   filename: function (req, file, cb) {
-    console.log(req)
     cb(null, file.originalname)
   },
 })
 
-var upload = multer({ storage: storage })
+var tmpStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/tmp")
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  },
+})
+
+var upload = multer({ storage })
+var tmpUpload = multer({ storage: tmpStorage })
 
 export default (req, res) => {
-  upload.array("main_image_url", 3)(req, {}, err => {
-    // do error handling here
-    console.log(req.files) // do something with the files here
-  })
+  const {
+    query: { multiple }
+  } = req
+
+  if (multiple) {
+    tmpUpload.array("image_urls", 10)(req, {}, err => {
+      // do error handling here
+      console.log(err) // do something with the files here
+    })
+  } else {
+    upload.array("main_image_url", 10)(req, {}, err => {
+      // do error handling here
+      console.log(err) // do something with the files here
+    })
+  }
   res.status(200).send({})
 }
