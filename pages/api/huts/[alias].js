@@ -1,4 +1,4 @@
-import { dbConnect } from '../../../db'
+import { dbConnect } from '../../../server/db'
 import Hut from '../../../models/Hut'
 
 export default async function handler(req, res) {

@@ -15,42 +15,13 @@ import { useFormik, Formik } from 'formik';
 import axios from 'axios'
 import { useState } from 'react'
 
-import { FileUploadInput } from '../components/form/input'
+import { SingleUploadInput, MultipleUploadInput } from '../components/form/input'
+
+import { uploadImg } from './utils/upload-img'
 
 export default () => {
     const [mainImagePreview, setMainImagePreview] = useState(null)
     const [sliderImagesPreview, setSliderImagesPreview] = useState(null)
-
-    // const formik = useFormik({
-    //     initialValues: {
-    //         title: 'Объектос',
-    //         owner_alias: 'admin',
-    //         short_description: 'Не так плох',
-    //         long_description: 'Могло быть и хуже',
-    //         object_alias: 'objectos',
-    //         has_children: false,
-    //         main_image_url: '',
-    //         slider_image_urls: []
-    //     },
-    //     onSubmit: async (values) => {
-    //         if (values?.main_image_url) {
-    //             console.log(values)
-    //             var formData = new FormData(); // Currently empty
-    //             formData.append('main_image_url', values.main_image_url);
-    //             const config = {
-
-    //                 onUploadProgress: (event) => {
-    //                     console.log(`Current progress:`, Math.round((event.loaded * 100) / event.total));
-    //                 },
-    //             };
-                
-    //             const response = await axios.post('/api/uploads', formData, config);
-
-    //             console.log('response', response.data);
-    //         }
-    //         console.log(values)
-    //     }
-    // })
 
     return (
         <Formik
@@ -59,7 +30,7 @@ export default () => {
                 owner_alias: 'admin',
                 short_description: 'Не так плох',
                 long_description: 'Могло быть и хуже',
-                object_alias: 'objectos',
+                alias: 'objectos',
                 has_children: false,
                 main_image_url: '',
                 slider_image_urls: []
@@ -67,18 +38,10 @@ export default () => {
             onSubmit={async (values) => {
                 if (values?.main_image_url) {
                     console.log(values)
-                    var formData = new FormData(); // Currently empty
+                    const formData = new FormData();
                     formData.append('main_image_url', values.main_image_url);
-                    const config = {
-    
-                        onUploadProgress: (event) => {
-                            console.log(`Current progress:`, Math.round((event.loaded * 100) / event.total));
-                        },
-                    };
-                    
-                    const response = await axios.post('/api/uploads', formData, config);
-    
-                    console.log('response', response.data);
+                    formData.append('alias', values.alias)
+                    await axios.post('/api/files/upload', formData)
                 }
                 console.log(values)
             }
@@ -137,44 +100,19 @@ export default () => {
                             </Label>
                     </Box>
 
-                    {/* <Box my="8px">
-                        {
-                            mainImagePreview &&
-                            <img src={mainImagePreview.file} />
-                        }
-                        <input
-                            name="main_image_url"
-                            type="file"
-                            onChange={async (event) => {
-                                console.log(event.currentTarget.files)
-                                formik.setFieldValue("main_image_url", event.currentTarget.files[0]);
-
-                                let reader = new FileReader();
-                                let file = event.currentTarget.files[0];
-                                reader.onloadend = () => {
-                                    setMainImagePreview({
-                                        file: reader.result
-                                    });
-                                };
-                                reader.readAsDataURL(file);
-                            }}
-                        ></input>
-                    </Box> */}
-
-                    <FileUploadInput
+                    <SingleUploadInput
                         name="main_image_url"
                     />
 
-                    <FileUploadInput
+                    <MultipleUploadInput
                         name="image_urls"
-                        multiple
                     />
 
                     <Button>Submit</Button>
                 </Box>
             </Container>
             )}
-        </Formik> 
+        </Formik>
     )
 
 }
