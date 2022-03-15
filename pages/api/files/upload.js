@@ -1,10 +1,8 @@
-import ImageKit from "imagekit";
+import ImageKit from 'imagekit'
 import { IncomingForm } from 'formidable'
 import { promises as fs } from 'fs'
 import { fromString } from 'uuidv4'
 import path from 'path'
-
-import { promise } from '../../../server/image-kit'
 
 export const config = {
     api: {
@@ -19,49 +17,64 @@ const imagekit = new ImageKit({
 });
 
 export default async (req, res) => {
-    const kit = await promise.getImageKit()
-    const authParams = await kit.getAuthenticationParameters()
+    const files = []
+    const fields = {}
+    new IncomingForm().parse(req)
+        .on('file', async (name, file) => {
+            files.push({
+                name,
+                file
+            })
+        })
+        .on('field', function(name, field) {
+            fields[name] = field
+        })
+        .on('error', function(err) {
+            next(err);
+        })
+        .on('end', async () => {
 
-    try {
-        const data = await new Promise((resolve, reject) => {
-            const form = new IncomingForm();
+            const loadedImages = []
+            for (const image of files) {
+                const {
+                    name,
+                    file
+                } = image
 
-            form.encoding = "base64";
+                const contents = await fs.readFile(file.filepath, {
+                    encoding: "base64",
+                })
 
-            form.parse(req, (err, fields, files) => {
-                if (err) return reject(err);
-                console.log({ fields, files })
-                resolve({ fields, files });
-            });
-        });
-        console.log(data)
-        const contents = await fs.readFile(data.files.main_image_url.filepath, {
-            encoding: "base64",
-        });
+                const result = await imagekit.upload({
+                    file: contents,
+                    folder: fields.alias,
+                    fileName: fromString(file.originalFilename) + path.extname(file.originalFilename),
+                })
 
-        const result = await imagekit.upload({
-            file: contents,
-            folder: data.fields.alias,
-            fileName: fromString(data.files.main_image_url.originalFilename) + path.extname(data.files.main_image_url.originalFilename),
-        });
+                loadedImages.push({
+                    name,
+                    id: result.fileId,
+                    url: result.url,
+                    width: result.width,
+                    height: result.height,
+                    thumbnail: result.thumbnailUrl
+                })
+            }
 
-        console.log(result)
-        if (result) {
-            const url = imagekit.url({
-                src: result.url,
-                transformation: [
-                    {
-                        height: "512",
-                        width: "512",
-                    },
-                ],
-            });
+            const mainImageInfo = loadedImages
+                .find((image) => image.name === 'main_image_url')
+
+
+            const imageUrls = loadedImages
+                .filter((image) => image.name === 'image_urls')
+                .map(({ name, ...rest}) => ({
+                    ...rest
+                }))
+
             res.status(200).json({
-                url,
+                main_image_url: mainImageInfo,
+                image_urls: imageUrls
             });
-        }
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({ statusCode: 500, message: err });
-    }
+
+        });
 };

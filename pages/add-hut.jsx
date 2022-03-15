@@ -1,28 +1,17 @@
 import {
     Label,
     Input,
-    Select,
     Textarea,
-    Radio,
     Checkbox,
-    Slider,
     Box,
-    Flex,
     Button,
     Container
 } from 'theme-ui'
-import { useFormik, Formik } from 'formik';
-import axios from 'axios'
-import { useState } from 'react'
+import { Formik } from 'formik'
 
 import { SingleUploadInput, MultipleUploadInput } from '../components/form/input'
 
-import { uploadImg } from './utils/upload-img'
-
 export default () => {
-    const [mainImagePreview, setMainImagePreview] = useState(null)
-    const [sliderImagesPreview, setSliderImagesPreview] = useState(null)
-
     return (
         <Formik
             initialValues={{
@@ -33,17 +22,35 @@ export default () => {
                 alias: 'objectos',
                 has_children: false,
                 main_image_url: '',
-                slider_image_urls: []
+                image_urls: []
             }}
             onSubmit={async (values) => {
+
+                const {
+                    main_image_url,
+                    image_urls,
+                    ...rest
+                } = values
                 if (values?.main_image_url) {
-                    console.log(values)
                     const formData = new FormData();
-                    formData.append('main_image_url', values.main_image_url);
+                    await formData.append('main_image_url', values.main_image_url[0])
                     formData.append('alias', values.alias)
-                    await axios.post('/api/files/upload', formData)
+
+                    for (const file of values.image_urls) {
+                        formData.append('image_urls', file)
+                    }
+
+                    const imagesUrl = await fetch('/api/files/upload', {
+                        method: 'POST',
+                        body: formData
+                    }).then(r => r.json())
+
+                    // console.log({
+                    //     newValues: {...imagesUrl, ...rest},
+                    //     values
+                    // })
                 }
-                console.log(values)
+
             }
             }
         >

@@ -31,17 +31,12 @@ export const MultipleUploadInput = ({
         })
 
         Object.values(currentTargetFile).map((file) => {
-            console.log(file.name)
             addToGallery({
                 src: `/tmp/${file.name}`,
                 width: 300
             })
         })
     }, [name])
-
-    useEffect(() => {
-        console.log('multiplePreview', multiplePreview)
-    },[multiplePreview])
 
 
     return (
