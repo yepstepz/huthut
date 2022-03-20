@@ -1,6 +1,10 @@
 import React, {useState, useCallback, useEffect} from 'react'
 import { useFormikContext }  from 'formik'
-import { Box } from 'theme-ui'
+import {
+    Box,
+    Input,
+    Button
+} from '@mui/material'
 
 import { uploadImg } from '../../../../pages/utils/upload-img'
 
@@ -8,7 +12,8 @@ import { PreviewGallery } from '../../../preview-gallery'
 
 export const MultipleUploadInput = ({
     name,
-    className
+    className,
+    setFieldValue
 }) => {
 
     const [multiplePreview, setMultiplePreview] = useState([])
@@ -19,8 +24,6 @@ export const MultipleUploadInput = ({
             img
         ])
     }
-
-    const { setFieldValue } = useFormikContext() ?? {}
 
     const handleChange = useCallback (async (event) => {
         const currentTargetFile =  event.currentTarget.files
@@ -41,12 +44,20 @@ export const MultipleUploadInput = ({
 
     return (
         <Box my="8px" className={className}>
-            <input
-                name={name}
-                type="file"
-                multiple
-                onChange={handleChange}
-            />
+            <label htmlFor="contained-button-file-multiple">
+                <Input
+                    sx={` display: none; `}
+                    onChange={handleChange}
+                    name={name}
+                    accept="image/*"
+                    id="contained-button-file-multiple"
+                    type="file"
+                    inputProps={{ multiple: true }}
+                />
+                <Button variant="outlined" component="span">
+                    Загрузить дополнительные фотографии
+                </Button>
+            </label>
             {
                 multiplePreview?.length &&
                 <PreviewGallery imagesSrc={multiplePreview} />

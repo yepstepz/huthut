@@ -1,12 +1,19 @@
 import React, { useState, useCallback } from 'react'
 import { useFormikContext }  from 'formik'
-import { Box } from 'theme-ui'
-import {PreviewGallery} from "../../preview-gallery";
-import {uploadImg} from "../../../pages/utils/upload-img";
+import {
+    Box,
+    Input,
+    Button
+} from '@mui/material'
+
+import { PreviewGallery } from "../../preview-gallery";
+import { uploadImg } from "../../../pages/utils/upload-img";
 
 export const SingleUploadInput = ({
     name,
-    className
+    className,
+    setFieldValue,
+    required
 }) => {
 
     const [preview, setPreview] = useState(null)
@@ -16,8 +23,6 @@ export const SingleUploadInput = ({
             img
         ])
     }
-
-    const { setFieldValue } = useFormikContext() ?? {}
 
     const handleChange = useCallback (async (event) => {
         const currentTargetFile =  event.currentTarget.files
@@ -38,11 +43,12 @@ export const SingleUploadInput = ({
 
     return (
         <Box my="8px" className={className}>
-            <input
-                name={name}
-                type="file"
-                onChange={handleChange}
-            />
+            <label htmlFor="contained-button-file">
+                <Input sx={` display: none; `} onChange={handleChange} required={required} name={name} accept="image/*" id="contained-button-file" type="file" />
+                <Button variant="outlined" component="span">
+                    Загрузить главное фото
+                </Button>
+            </label>
             {
                 preview?.length &&
                 <PreviewGallery

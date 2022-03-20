@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import theme from '../lib/theme'
 
 const makeTitle = (title, name) =>
   title === name ? title : `${title} – ${name}`
@@ -37,18 +36,18 @@ const Meta = ({
         <meta key="tw_img" name="twitter:image" content={image} />
       </>
     )}
-    <meta key="theme_color" name="theme-color" content={theme.colors.primary} />
-    <meta
-      key="tile_color"
-      name="msapplication-TileColor"
-      content={theme.colors.primary}
-    />
-    <link
-      key="safari_icon"
-      rel="mask-icon"
-      href={`${url}/safari-pinned-tab.png`}
-      color={theme.colors.primary}
-    />
+    {/*<meta key="theme_color" name="theme-color" content={theme.colors.primary} />*/}
+    {/*<meta*/}
+    {/*  key="tile_color"*/}
+    {/*  name="msapplication-TileColor"*/}
+    {/*  content={theme.colors.primary}*/}
+    {/*/>*/}
+    {/*<link*/}
+    {/*  key="safari_icon"*/}
+    {/*  rel="mask-icon"*/}
+    {/*  href={`${url}/safari-pinned-tab.png`}*/}
+    {/*  color={theme.colors.primary}*/}
+    {/*/>*/}
     <link
       key="apple_icon"
       rel="apple-touch-icon"

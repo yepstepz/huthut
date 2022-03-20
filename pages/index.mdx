@@ -1,13 +1,19 @@
-import { Button, Container } from 'theme-ui'
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
-export default props => <Container as="main" py={5} {...props} />
+
+export default ({ children}) => (
+    <div>
+        { children }
+        <Stack direction="row" spacing={1}>
+          <Chip label="Chip Filled" />
+          <Chip label="Chip Outlined" variant="outlined" />
+        </Stack>
+    </div>
+)
 
 # Next Theme Starter
 
 This is
 [@lachlanjc/next-theme-starter](https://github.com/lachlanjc/next-theme-starter)
 in action.
-
-<Button as="a" href="https://github.com/lachlanjc/next-theme-starter">
-  GitHub
-</Button>

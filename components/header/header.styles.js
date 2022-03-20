@@ -1,9 +1,7 @@
 import styled from '@emotion/styled'
-import { Container, Text } from 'theme-ui'
-
 export const HeaderStyled = styled.header``
 
-export const InnerHeaderContainerStyled = styled((props) =>  <Container {...props} />)`
+export const InnerHeaderContainerStyled = styled((props) =>  <div {...props} />)`
   display: flex;
   justify-content: space-between;
 `
